@@ -10,6 +10,7 @@ builder.Services.AddDbContext<CurrencyMappingContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CurrencyMappingContext") ?? throw new InvalidOperationException("Connection string 'CurrencyMappingContext' not found.")));
 
 // Add services to the container.
+// 使用DI注入各種服務
 builder.Logging.AddLocalFileLogger(options => { options.SaveDays = 7; });
 
 builder.Services.AddHttpClient<BitcoinPriceService>();
@@ -30,7 +31,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-// 使用 Middleware 中介程序，收集 HTTP Request 資訊
+// 注入 Middleware 中介程序，收集 HTTP Request 資訊
 app.UseMiddleware<ExceptionMiddleware>();
 
 

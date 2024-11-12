@@ -13,8 +13,9 @@ namespace CurrencyMapping.Models
 
     public class CurrencyShow : Currency
     {
-        //中文名稱 symbol
+        //匯率
         public decimal? rate { get; set; }
-        //幣別符號symbol
+        //更新時間
+        public string? updated { get; set; }
     }
 }

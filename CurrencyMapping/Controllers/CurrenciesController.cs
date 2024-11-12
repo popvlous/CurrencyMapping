@@ -41,7 +41,7 @@ namespace CurrencyMapping.Controllers
             return await _context.Currency.OrderBy(u => u.code).ToListAsync();
         }
 
-        // GET: api/Currencies/USD
+        // GET: api/Currencies/{code}
         /// <summary>獲取個別幣與中文對應</summary>
         /// <param name="code">幣別代碼</param>
         /// <returns>
@@ -69,7 +69,7 @@ namespace CurrencyMapping.Controllers
             return currency;
         }
 
-        // PUT: api/Currencies/5
+        // PUT: api/Currencies/{code}
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         /// <summary>編輯單一幣別中文名稱</summary>
         /// <param name="code">幣別代碼</param>

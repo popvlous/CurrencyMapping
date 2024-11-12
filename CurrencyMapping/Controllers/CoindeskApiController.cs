@@ -4,6 +4,9 @@ using CurrencyMapping.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Configuration;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Globalization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,53 +19,65 @@ namespace CurrencyMapping.Controllers
         private readonly CurrencyMappingContext _context;
         private readonly ILogger<CoindeskApiController> _logger;
         private readonly BitcoinPriceService _bitcoinService;
+        private readonly IConfiguration _configuration;
 
-        public CoindeskApiController(ILogger<CoindeskApiController> logger, CurrencyMappingContext context, BitcoinPriceService bitcoinService)
+        public CoindeskApiController(ILogger<CoindeskApiController> logger, CurrencyMappingContext context, BitcoinPriceService bitcoinService, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
-            _bitcoinService = bitcoinService;
+            _bitcoinService = bitcoinService; 
+            _configuration = configuration;
         }
 
         // GET: api/<CoindeskApiController>
+        /// <summary>調用CoindeskApi 並顯示結果</summary>
+        /// <returns>
+        /// </returns>
         [HttpGet]
         public async Task<ActionResult<BitcoinPriceIndex>> GetBitcoinPrice()
         {
             this._logger.LogInformation("GetBitcoinPrice api start");
-            string webApiUrl = "https://api.coindesk.com";
 
-            var getDataUrl = $"{webApiUrl}/v1/bpi/currentprice.json";
+            var getDataUrl = $"{_configuration["webApiUrl"]}/v1/bpi/currentprice.json";
 
+            //
             var price = await _bitcoinService.GetBitcoinPriceAsync();
+
+            this._logger.LogInformation("GetBitcoinPrice api response : " + price.ToString());
 
             return Ok(price);
 
         }
 
+
+
+        /// <summary>調用CoindeskApi解析，並產生新的API</summary>
+        /// <returns>
+        /// </returns>
         [HttpGet("[action]")]
-        public async IAsyncEnumerable<CurrencyShow> IAsyncEnumGetNewAPI()
+        public async IAsyncEnumerable<CurrencyShow> CreateCurrenyMappingApi()
         {
+            this._logger.LogInformation("CreateCurrenyMappingApi api start");
 
-            string webApiUrl = "https://api.coindesk.com";
-            var getDataUrl = $"{webApiUrl}/v1/bpi/currentprice.json";
+            var getDataUrl = $"{_configuration["webApiUrl"]}/v1/bpi/currentprice.json";
 
-            //HttpRequestMessage request = new(HttpMethod.Get, getDataUrl);
-
-            //var response = await client.SendAsync(request);
+            //調用CoindeskApi
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(getDataUrl);
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
-            dynamic obj = JsonConvert.DeserializeObject(responseBody, typeof(object));
+            this._logger.LogInformation("調用CoindeskApi response : " + responseBody);
 
-            JObject json = JObject.Parse(responseBody);
-            //bitcoinPrice = (decimal)json["bpi"]["USD"]["rate"];
-            JObject converted = JsonConvert.DeserializeObject<JObject>(responseBody);
+            //解析CoindeskApi response
+            JObject json_obj = JObject.Parse(responseBody);
+            JObject json_converted = JsonConvert.DeserializeObject<JObject>(responseBody);
             Dictionary<string, string> keyValueMap = new Dictionary<string, string>();
+            string isoDateString = json_obj["time"]["updatedISO"].ToString();
+            string updated = DateTime.Parse(json_obj["time"]["updatedISO"].ToString()).ToString("yyyy/mm/dd H:mm:ss");
 
-            foreach (KeyValuePair<string, JToken> keyValuePair in converted)
+            //返回新的API內容，bpi的key會變動，額外進行處理
+            foreach (KeyValuePair<string, JToken> keyValuePair in json_converted)
             {
-                //keyValueMap.Add(keyValuePair.Key, keyValuePair.Value.ToString());
                 if (keyValuePair.Key == "bpi")
                 {
                     JObject bpi_j = JsonConvert.DeserializeObject<JObject>(keyValuePair.Value.ToString());
@@ -71,12 +86,11 @@ namespace CurrencyMapping.Controllers
                         var currency = await _context.Currency.FindAsync(keyValuePair_bpi.Key.ToString());
                         yield return new CurrencyShow
                         {
-                            code = json["bpi"][keyValuePair_bpi.Key]["code"].ToString(),
+                            code = json_obj["bpi"][keyValuePair_bpi.Key]["code"].ToString(),
                             cname = (currency == null) ? "na" : currency.cname,
-                            //symbol = json["bpi"][keyValuePair_bpi.Key]["symbol"].ToString(),
-                            rate = Convert.ToDecimal(json["bpi"][keyValuePair_bpi.Key]["rate"].ToString()),
-                            //description = json["bpi"][keyValuePair_bpi.Key]["symbol"].ToString(),
-                            //rate_float = float.Parse(json["bpi"][keyValuePair_bpi.Key]["rate"].ToString())
+                            rate = Convert.ToDecimal(json_obj["bpi"][keyValuePair_bpi.Key]["rate"].ToString()),
+                            updated = updated
+
                         };
                     }
                 }
