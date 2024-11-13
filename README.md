@@ -21,13 +21,13 @@ coindesk API：https://api.coindesk.com/v1/bpi/currentprice.json
         
     - 編輯DB幣別代碼與對應中文 
         - [PUT] /api/Currencies/{code}
-        - 
+  
     - 刪除DB幣別代碼與對應中文
         - [DELETE] /api/Currencies/{code}
 
 - 呼叫 coindesk 的 API。
     - [GET] /api/CoindeskApi
-    - 
+    
 - 呼叫 coindesk 的 API，並進行資料轉換，組成新 API。此新 API 提供：
     - 更新時間（時間格式範例：1990/01/01 00:00:00）。
     - 幣別相關資訊（幣別，幣別中文名稱，以及匯率）。
