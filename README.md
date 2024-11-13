@@ -95,6 +95,8 @@ VALUES
 - swagger-ui
     - https://localhost:44392/swagger/index.html
 - 多語系設計
+    - 在 programs,cs 使用 AddLocalization，注入多語言服務 
 - design pattern 實作
+    - 使用DI等設計模式 
 - 能夠運行在 Docker
 - 加解密技術應用 (AES/RSA…etc.)
