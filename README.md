@@ -89,11 +89,11 @@ VALUES
 - 
 - ## 條件
 - 印出所有 API 被呼叫以及呼叫外部 API 的 request and response body log
-    -使用LoggerLocalFile紀錄
+    - 使用LoggerLocalFile紀錄
 - Error handling 處理 API response
-    -使用middleware處理Error Error handlin
+    - 使用middleware處理Error Error handlin
 - swagger-ui
-    -https://localhost:44392/swagger/index.html
+    - https://localhost:44392/swagger/index.html
 - 多語系設計
 - design pattern 實作
 - 能夠運行在 Docker
