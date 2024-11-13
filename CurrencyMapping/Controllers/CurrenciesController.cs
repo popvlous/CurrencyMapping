@@ -9,6 +9,7 @@ using CurrencyMapping.Data;
 using CurrencyMapping.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Localization;
 
 namespace CurrencyMapping.Controllers
 {
@@ -18,11 +19,13 @@ namespace CurrencyMapping.Controllers
     {
         private readonly CurrencyMappingContext _context;
         private readonly ILogger<CurrencyMappingContext> _logger;
+        private readonly IStringLocalizer<CurrenciesController> _localizer;
 
-        public CurrenciesController(CurrencyMappingContext context, ILogger<CurrencyMappingContext> logger)
+        public CurrenciesController(CurrencyMappingContext context, ILogger<CurrencyMappingContext> logger, IStringLocalizer<CurrenciesController> localizer)
         {
             _context = context;
             _logger = logger;
+            _localizer = localizer;
         }
 
         // GET: api/Currencies
@@ -33,13 +36,13 @@ namespace CurrencyMapping.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Currency>>> Currencies()
         {
-            this._logger.LogInformation("GetAllCurrency api start");
+            this._logger.LogInformation("GetAllCurrency api " + _localizer["start"]);
             foreach (var cur in _context.Currency.ToList())
             {
                 this._logger.LogInformation("Currency :" + cur.code + cur.cname);
 
             }
-            this._logger.LogInformation("GetAllCurrency api end");
+            this._logger.LogInformation("GetAllCurrency api " + _localizer["end"]);
             return await _context.Currency.OrderBy(u => u.code).ToListAsync();
         }
 
@@ -52,12 +55,12 @@ namespace CurrencyMapping.Controllers
         [HttpGet("{code}", Name = nameof(GetCurrency))]
         public async Task<ActionResult<Currency>> GetCurrency(string code)
         {
-            this._logger.LogInformation("GetCurrency api start");
+            this._logger.LogInformation("GetCurrency api " + _localizer["start"]);
             var currency = await _context.Currency.FindAsync(code);
 
             if (currency == null)
             {
-                this._logger.LogInformation("此幣別代號無相關資料");
+                this._logger.LogInformation(_localizer["currency code is not exist"]);
                 return NotFound();
             }
 
@@ -67,7 +70,7 @@ namespace CurrencyMapping.Controllers
                 this._logger.LogInformation("Currency :" + cur.code + cur.cname);
 
             }
-            this._logger.LogInformation("GetCurrency api end");
+            this._logger.LogInformation("GetCurrency api " + _localizer["end"]);
             return currency;
         }
 
@@ -81,7 +84,7 @@ namespace CurrencyMapping.Controllers
         [HttpPut("{code}")]
         public async Task<IActionResult> PutCurrency(string code, Currency currency)
         {
-            this._logger.LogInformation("PutCurrency api start");
+            this._logger.LogInformation("PutCurrency api " + _localizer["start"]);
             if (code != currency.code)
             {
                 this._logger.LogInformation("幣別代碼與更新資料的代碼不符");
@@ -110,7 +113,7 @@ namespace CurrencyMapping.Controllers
                 }
             }
 
-            this._logger.LogInformation("PutCurrency api end");
+            this._logger.LogInformation("PutCurrency api " + _localizer["end"]);
 
             return NoContent();
         }
@@ -124,7 +127,7 @@ namespace CurrencyMapping.Controllers
         [HttpPost]
         public async Task<ActionResult<Currency>> PostCurrency(Currency currency)
         {
-            this._logger.LogInformation("PostCurrency api start");
+            this._logger.LogInformation("PostCurrency api " + _localizer["start"]);
             _context.Currency.Add(currency);
             try
             {
@@ -145,7 +148,7 @@ namespace CurrencyMapping.Controllers
 
             }
 
-            this._logger.LogInformation("PostCurrency api end");
+            this._logger.LogInformation("PostCurrency api " + _localizer["end"]);
 
             return CreatedAtRoute("GetCurrency", new { code = currency.code }, currency);
         }
@@ -159,7 +162,7 @@ namespace CurrencyMapping.Controllers
         [HttpDelete("{code}")]
         public async Task<IActionResult> DeleteCurrency(string code)
         {
-            this._logger.LogInformation("DeleteCurrency api start");
+            this._logger.LogInformation("DeleteCurrency api " + _localizer["start"]);
             this._logger.LogInformation("刪除的代碼為 : " + code);
             var currency = await _context.Currency.FindAsync(code);
             if (currency == null)
@@ -170,7 +173,7 @@ namespace CurrencyMapping.Controllers
             _context.Currency.Remove(currency);
             await _context.SaveChangesAsync();
 
-            this._logger.LogInformation("DeleteCurrency api end");
+            this._logger.LogInformation("DeleteCurrency api "+ _localizer["end"]);
 
             return NoContent();
         }

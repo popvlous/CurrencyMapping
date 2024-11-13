@@ -2,6 +2,7 @@ using CurrencyMapping.Controllers;
 using CurrencyMapping.Data;
 using CurrencyMapping.Models;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace CurrenciesTest
@@ -11,11 +12,12 @@ namespace CurrenciesTest
         private CurrencyMapping.Controllers.CurrenciesController _CurrenciesController;
         private readonly CurrencyMappingContext _context;
         private readonly ILogger<CurrencyMappingContext> _logger;
+        private readonly IStringLocalizer<CurrenciesController> _localizer;
 
         [SetUp]
         public void Setup()
         {
-            _CurrenciesController = new CurrenciesController(_context, _logger);
+            _CurrenciesController = new CurrenciesController(_context, _logger, _localizer);
         }
 
 
