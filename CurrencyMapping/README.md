@@ -34,8 +34,12 @@ coindesk API：https://api.coindesk.com/v1/bpi/currentprice.json
     - [GET] /api/CoindeskApi/CreateCurrenyMappingApi
     - 
 - 所有功能均須包含單元測試。
-- 
+    - CoindeskApiTest : CoindeskApiController的測試
+    - CurrenciesTest  : CurrenciesController的測試
+    
 - 將專案上傳至 GitHub 並設為公開分享，回傳repo鏈結。
+    - https://github.com/popvlous/CurrencyMapping.git
+
 - 嘗試錄製demo，上傳至Youtube影片(不要用Shorts)，設為非公開分享回傳
 
 ## 使用說明

@@ -1,6 +1,7 @@
 using CurrencyMapping.Controllers;
 using CurrencyMapping.Data;
 using CurrencyMapping.Models;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 
 namespace CurrenciesTest

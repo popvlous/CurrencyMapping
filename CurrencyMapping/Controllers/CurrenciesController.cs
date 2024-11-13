@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CurrencyMapping.Data;
 using CurrencyMapping.Models;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CurrencyMapping.Controllers
 {
@@ -43,7 +45,7 @@ namespace CurrencyMapping.Controllers
 
         // GET: api/Currencies/{code}
         /// <summary>獲取個別幣與中文對應</summary>
-        /// <param name="code">幣別代碼</param>
+        /// <param name="code">幣別代碼(需先調用)</param>
         /// <returns>
         /// 
         /// </returns>
